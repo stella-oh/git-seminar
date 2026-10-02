@@ -1,0 +1,25 @@
+name: Claude Token Alert
+
+on:
+  schedule:
+    - cron: "0 0,9 * * *" # 매일 09:00, 18:00 KST (UTC 00:00, 09:00)
+  workflow_dispatch:
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Send token usage alert
+        run: python claude-token-alert/token_alert.py
+        env:
+          ANTHROPIC_ADMIN_KEY: ${{ secrets.ANTHROPIC_ADMIN_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          LIMIT_DAILY: ${{ vars.LIMIT_DAILY }}
+          LIMIT_WEEKLY: ${{ vars.LIMIT_WEEKLY }}
+          LIMIT_MONTHLY: ${{ vars.LIMIT_MONTHLY }}
+          WARN_PERCENT: ${{ vars.WARN_PERCENT || '80' }}
